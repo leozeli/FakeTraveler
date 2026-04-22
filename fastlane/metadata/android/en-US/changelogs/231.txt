@@ -1,4 +1,7 @@
+* Add Tencent Maps WMTS tile support with automatic SK signing
+* Add address search (Tencent Geocoder + Nominatim fallback)
+* Switch default map tiles to Gaode/AutoNavi (accessible in mainland China)
+* Add map tile URL and Tencent SK settings
 * Now also mocks speeds (thanks to @tstenner)
-* Leaflet providers updated
 * Settings are now saved again
 * Fix crash when mock frequency <= 0 (thanks to @gitexadelintershipprod)
