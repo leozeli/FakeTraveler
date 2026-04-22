@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@android:color/primary_text_dark</color>
-    <color name="colorPrimaryDark">@android:color/primary_text_dark</color>
-    <color name="colorAccent">@android:color/primary_text_dark</color>
+    <!-- Stitch "Nocturnal Navigator" exact palette -->
+    <color name="stitch_primary">#cfbcff</color>
+    <color name="stitch_on_primary">#4d00bb</color>
+    <color name="stitch_primary_container">#6200ea</color>
+    <color name="stitch_on_primary_container">#e9deff</color>
+    <color name="stitch_primary_fixed">#7631fd</color>
+    <color name="stitch_secondary">#cac3dc</color>
+    <color name="stitch_on_secondary">#423d52</color>
+    <color name="stitch_secondary_container">#3d394d</color>
+    <color name="stitch_on_secondary_container">#c3bcd4</color>
+    <color name="stitch_background">#0e0e11</color>
+    <color name="stitch_on_background">#e8e3ee</color>
+    <color name="stitch_surface">#0e0e11</color>
+    <color name="stitch_surface_dim">#0e0e11</color>
+    <color name="stitch_surface_bright">#2d2b33</color>
+    <color name="stitch_surface_container_lowest">#000000</color>
+    <color name="stitch_surface_container_low">#141318</color>
+    <color name="stitch_surface_container">#1a191f</color>
+    <color name="stitch_surface_container_high">#201f25</color>
+    <color name="stitch_surface_container_highest">#26252c</color>
+    <color name="stitch_on_surface">#e8e3ee</color>
+    <color name="stitch_on_surface_variant">#ada9b3</color>
+    <color name="stitch_outline">#77747d</color>
+    <color name="stitch_outline_variant">#49474f</color>
+    <color name="stitch_error">#f97386</color>
+    <color name="stitch_on_error">#490013</color>
+    <color name="stitch_error_container">#871c34</color>
+    <color name="stitch_on_error_container">#ff97a3</color>
+    <color name="stitch_tertiary">#ffcef3</color>
+    <color name="stitch_on_tertiary">#674261</color>
 </resources>

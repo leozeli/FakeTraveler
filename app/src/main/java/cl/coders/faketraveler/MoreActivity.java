@@ -7,6 +7,7 @@ import static cl.coders.faketraveler.SharedPrefsUtil.putDouble;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,6 +19,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,6 +29,13 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.Locale;
 
 public class MoreActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Configuration config = new Configuration(newBase.getResources().getConfiguration());
+        config.setLocale(Locale.SIMPLIFIED_CHINESE);
+        super.attachBaseContext(newBase.createConfigurationContext(config));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,28 +207,74 @@ public class MoreActivity extends AppCompatActivity {
         });
 
 
-        EditText etMapProvider = findViewById(R.id.et_MapProvider);
-        etMapProvider.setText(sharedPref.getString("mapProvider",
-                MapProviderUtil.getDefaultMapProvider(Locale.getDefault())));
-        etMapProvider.addTextChangedListener(new TextWatcher() {
+        EditText etAmapKey = findViewById(R.id.et_AmapKey);
+        etAmapKey.setText(sharedPref.getString("geocoderKey", ""));
+        etAmapKey.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 Context context = getApplicationContext();
                 SharedPreferences sharedPref = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-
-                if (etMapProvider.getText().toString().isBlank()) {
-                    editor.putString("mapProvider", MapProviderUtil.getDefaultMapProvider(Locale.getDefault()));
-                } else {
-                    editor.putString("mapProvider", etMapProvider.getText().toString());
-                }
-
+                editor.putString("geocoderKey", etAmapKey.getText().toString().trim());
                 editor.apply();
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        EditText etTencentSk = findViewById(R.id.et_TencentSk);
+        etTencentSk.setText(sharedPref.getString("geocoderSk", ""));
+        etTencentSk.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                Context context = getApplicationContext();
+                SharedPreferences sharedPref = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("geocoderSk", etTencentSk.getText().toString().trim());
+                editor.apply();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        MaterialButton btnRestart = findViewById(R.id.btn_RestartApp);
+        btnRestart.setOnClickListener(v -> {
+            android.app.PendingIntent pending = android.app.PendingIntent.getActivity(
+                    getApplicationContext(), 0,
+                    getPackageManager().getLaunchIntentForPackage(getPackageName()),
+                    android.app.PendingIntent.FLAG_CANCEL_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE);
+            ((android.app.AlarmManager) getSystemService(ALARM_SERVICE))
+                    .set(android.app.AlarmManager.RTC, System.currentTimeMillis() + 200, pending);
+            android.os.Process.killProcess(android.os.Process.myPid());
+        });
+
+        EditText etTileUrl = findViewById(R.id.et_MapProvider);
+        etTileUrl.setText(sharedPref.getString("tileUrl", MainActivity.DEFAULT_TILE_URL));
+        etTileUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                Context context = getApplicationContext();
+                SharedPreferences sharedPref = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                String val = etTileUrl.getText().toString().trim();
+                editor.putString("tileUrl", val.isEmpty() ? MainActivity.DEFAULT_TILE_URL : val);
+                editor.apply();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override

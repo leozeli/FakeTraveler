@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.Material3.DayNight">
+    <style name="AppTheme" parent="Theme.Material3.Dark">
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="colorPrimary">@color/stitch_primary</item>
+        <item name="colorOnPrimary">@color/stitch_on_primary</item>
+        <item name="colorPrimaryContainer">@color/stitch_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/stitch_on_primary_container</item>
+        <item name="colorSecondary">@color/stitch_secondary</item>
+        <item name="colorOnSecondary">@color/stitch_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/stitch_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/stitch_on_secondary_container</item>
+        <item name="colorSurface">@color/stitch_surface</item>
+        <item name="colorOnSurface">@color/stitch_on_surface</item>
+        <item name="colorSurfaceVariant">@color/stitch_surface_container_highest</item>
+        <item name="colorOnSurfaceVariant">@color/stitch_on_surface_variant</item>
+        <item name="android:colorBackground">@color/stitch_background</item>
+        <item name="colorOnBackground">@color/stitch_on_background</item>
+        <item name="colorOutline">@color/stitch_outline</item>
+        <item name="colorOutlineVariant">@color/stitch_outline_variant</item>
+        <item name="colorError">@color/stitch_error</item>
+        <item name="colorOnError">@color/stitch_on_error</item>
+        <item name="colorErrorContainer">@color/stitch_error_container</item>
+        <item name="colorOnErrorContainer">@color/stitch_on_error_container</item>
     </style>
+
 </resources>

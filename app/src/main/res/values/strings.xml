@@ -11,11 +11,16 @@
     <string name="ActivityMain_Stop">Stop</string>
 
     <!--  Strings from MainActivity.java  -->
-    <string name="MainActivity_NoLatLong">No latitude/longitude values. Long press in the map where you want to be located.</string>
+    <string name="MainActivity_NoLatLong">No latitude/longitude values. Tap on the map where you want to be located.</string>
+    <string name="ActivityMain_SearchHint">Search an address: Street, City</string>
+    <string name="MainActivity_SearchNotFound">Address not found.</string>
     <string name="MainActivity_MockApplied">Mocked location applied.</string>
     <string name="MainActivity_MockNotApplied">Mocked location not applied. You must enable mock location in developer settings!</string>
     <string name="MainActivity_MockLocRunning">Mocking location service running.</string>
     <string name="MainActivity_MockStopped">Mocking stopped.</string>
+    <string name="ActivityMain_CoordinatesLabel">Current Spoof</string>
+    <string name="ActivityMain_CoordinatesTitle">Coordinate Control</string>
+    <string name="ActivityMain_CoordinatesSubtitle">Update your current navigator position</string>
 
     <!--  Strings from activity_more.xml layout  -->
     <string name="ActivityMore_HowToTittle">How to use it?</string>
@@ -28,7 +33,12 @@
     <string name="ActivityMore_IconLicense">The launcher icon was created by @ArtistDev44 - thank you very much for your work!</string>
     <string name="ActivityMore_HowToInstructions">Long press where you want to be located in the map and press Apply button. The location will be mocked one or more times accordingly to configuration below. While the mock is running, you can change the location just by long pressing where you to be. To stop mocking the location, press the Stop button. Note: you must enable Fake Traveler as mock location app in Developers options.</string>
     <string name="ActivityMore_DMockLatLon">Mock movement? (1&#160;/&#160;1 000 000°, 0&#160;=&#160;no)</string>
-    <string name="ActivityMore_MapProvider">Map Provider (e.g., \'OpenStreetMap\')</string>
-    <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
-    <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
+    <string name="ActivityMore_AmapKey">Tencent Maps API Key (optional)</string>
+    <string name="ActivityMore_AmapKeyInfo">Enter your Tencent Maps key from lbs.qq.com. Used for address search and map tiles. Setting this key automatically switches to Tencent Maps WMTS tiles (requires WMTS access on your key). Restart after changing.</string>
+    <string name="ActivityMore_TencentSk">Tencent Maps Secret Key (SK, optional)</string>
+    <string name="ActivityMore_TencentSkInfo">Enter your SK from the lbs.qq.com console. Required if signature verification is enabled for your key. Leave blank if you disabled signature verification.</string>
+    <string name="ActivityMore_MapProvider">Map Tile URL (requires restart)</string>
+    <string name="ActivityMore_MapProviderInfo">Tile URL with {z}/{x}/{y} placeholders. Leave blank to use Gaode (AutoNavi) as default.\n\nIf a Tencent Maps API key is set above, tiles are automatically switched to Tencent Maps WMTS. Restart after changing the key.\n\nNote: Gaode/Baidu tiles use GCJ-02 coordinates (~300m offset from GPS).</string>
+    <string name="ActivityMore_RestartApp">Restart App</string>
+    <string name="ActivityMore_LeafletLicense"><![CDATA[Map rendered by <a href="https://maplibre.org/">MapLibre</a> (BSD 2-Clause), data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.]]></string>
 </resources>
