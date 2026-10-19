@@ -9,6 +9,10 @@ import static cl.coders.faketraveler.SharedPrefsUtil.migrateOldPreferences;
 import static cl.coders.faketraveler.SharedPrefsUtil.putDouble;
 
 import android.annotation.SuppressLint;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
+import android.content.pm.PackageManager;
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +23,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Location;
 import android.net.Uri;
+import android.provider.Settings;
+import android.os.PowerManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -102,10 +108,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         editTextLat = findViewById(R.id.editTextLat);
         editTextLng = findViewById(R.id.editTextLng);
 
-        buttonApplyStop.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MockedLocationService.class);
-            bindService(intent, this, BIND_AUTO_CREATE);
-        });
+        buttonApplyStop.setOnClickListener(view -> startOrBindMockService());
         buttonSettings.setOnClickListener(view -> {
             Intent myIntent = new Intent(getBaseContext(), MoreActivity.class);
             startActivity(myIntent);
@@ -344,14 +347,53 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
      */
     void changeButtonToApply() {
         buttonApplyStop.setText(context.getResources().getString(R.string.ActivityMain_Apply));
-        buttonApplyStop.setOnClickListener(view -> {
-            if (binder == null) {
-                Intent intent = new Intent(this, MockedLocationService.class);
-                bindService(intent, this, BIND_AUTO_CREATE);
+        buttonApplyStop.setOnClickListener(view -> startOrBindMockService());
+    }
+
+    private void startOrBindMockService() {
+        ensureRuntimePermissions();
+        requestIgnoreBatteryOptimizations();
+        if (binder == null) {
+            Intent intent = new Intent(this, MockedLocationService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, intent);
             } else {
-                binder.continueMock();
+                startService(intent);
             }
-        });
+            bindService(intent, this, BIND_AUTO_CREATE);
+        } else {
+            binder.continueMock();
+        }
+    }
+
+
+    private void requestIgnoreBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (pm != null && pm.isIgnoringBatteryOptimizations(getPackageName())) return;
+        try {
+            Intent i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            i.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(i);
+        } catch (Exception e) {
+            Log.w(MainActivity.class.toString(), "Could not request ignore battery optimizations", e);
+        }
+    }
+
+    private void ensureRuntimePermissions() {
+        java.util.ArrayList<String> needed = new java.util.ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (Build.VERSION.SDK_INT >= 33
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        if (!needed.isEmpty()) {
+            ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), 1001);
+        }
     }
 
     /**
@@ -360,7 +402,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     void changeButtonToStop() {
         buttonApplyStop.setText(context.getResources().getString(R.string.ActivityMain_Stop));
         buttonApplyStop.setOnClickListener(view -> {
-            unbindService(this);
+            if (binder != null) {
+                binder.stopMock();
+            } else {
+                Intent stop = new Intent(this, MockedLocationService.class);
+                stop.setAction(MockedLocationService.ACTION_STOP);
+                startService(stop);
+            }
+            try {
+                unbindService(this);
+            } catch (IllegalArgumentException ignored) {
+            }
             disconnectService();
         });
     }
