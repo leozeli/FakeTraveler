@@ -315,7 +315,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         requestCurrentLocation();
 
-        if (endTime > System.currentTimeMillis()) {
+        boolean mockRunning = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE)
+                .getBoolean("mockRunning", false);
+        boolean unlimited = mockCount <= 0;
+        if (mockRunning && (unlimited || endTime == 0 || endTime > System.currentTimeMillis())) {
+            changeButtonToStop();
+        } else if (!unlimited && endTime > System.currentTimeMillis()) {
             changeButtonToStop();
         } else {
             endTime = 0;
@@ -507,8 +512,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 Location.distanceBetween(lat, lng, lat + dLat / 1000000, lng + dLng / 1000000, speed);
                 speed[0] /= mockFrequency * 1000L;
             }
+            if (mockCount < 0) mockCount = 0;
             binder.startMock(lng, lat, dLng / 1000000, dLat / 1000000, mockFrequency * 1000L, mockCount, speed[0]);
-            endTime = System.currentTimeMillis() + (mockCount - 1L) * mockFrequency * 1000L;
+            // mockCount 0 means no time limit. A positive count ends after that many injections.
+            if (mockCount == 0) {
+                endTime = 0;
+            } else {
+                endTime = System.currentTimeMillis() + (mockCount - 1L) * mockFrequency * 1000L;
+            }
             saveSettings();
         }
     }
