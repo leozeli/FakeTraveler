@@ -270,7 +270,7 @@ public class MockedLocationService extends Service {
         );
         channel.setDescription(getString(R.string.MockService_ChannelDesc));
         channel.setShowBadge(false);
-        NotificationManager nm = getSystemService(NotificationManager.class);
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (nm != null) nm.createNotificationChannel(channel);
     }
 
@@ -284,7 +284,7 @@ public class MockedLocationService extends Service {
     }
 
     private void updateNotification() {
-        NotificationManager nm = getSystemService(NotificationManager.class);
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (nm != null) {
             nm.notify(NOTIFICATION_ID, buildNotification());
         }
