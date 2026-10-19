@@ -31,5 +31,8 @@
     <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
 
-
+    <string name="MockService_ChannelName">Localização fictícia</string>
+    <string name="MockService_ChannelDesc">Mantém a injeção de GPS fictício enquanto o app está em segundo plano</string>
+    <string name="MockService_Title">Fake Traveler está simulando a localização</string>
+    <string name="MockService_Text">Localização: %1$s</string>
 </resources>
