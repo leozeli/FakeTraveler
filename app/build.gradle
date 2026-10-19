@@ -13,8 +13,20 @@ android {
         versionCode = 234
         versionName = "2.3.2-fgs2"
     }
+    // Public distribution key for this fork's GitHub releases. It is not the
+    // upstream F-Droid key and not a local debug keystore, so an already
+    // installed cl.coders.faketraveler must be uninstalled before upgrading.
+    signingConfigs {
+        release {
+            storeFile file("release.keystore")
+            storePassword "faketraveler"
+            keyAlias "faketraveler"
+            keyPassword "faketraveler"
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
