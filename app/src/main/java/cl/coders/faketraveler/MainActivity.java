@@ -10,6 +10,7 @@ import static cl.coders.faketraveler.SharedPrefsUtil.putDouble;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import androidx.core.app.ActivityCompat;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,9 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.provider.Settings;
+import android.os.PowerManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -42,7 +46,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -56,6 +59,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -185,10 +189,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         suggestionList.setLayoutManager(new LinearLayoutManager(this));
         suggestionList.setAdapter(suggestionAdapter);
 
-        buttonApplyStop.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MockedLocationService.class);
-            bindService(intent, this, BIND_AUTO_CREATE);
-        });
+        buttonApplyStop.setOnClickListener(view -> startOrBindMockService());
         buttonSettings.setOnClickListener(view -> {
             Intent myIntent = new Intent(getBaseContext(), MoreActivity.class);
             startActivity(myIntent);
@@ -493,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
      */
     protected void applyLocation() {
         if (latIsEmpty() || lngIsEmpty()) {
-            toast(context.getResources().getString(R.string.MainActivity_NoLatLong));
+            showSnackbar(context.getResources().getString(R.string.MainActivity_NoLatLong));
             return;
         }
 
@@ -512,12 +513,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    void toast(String str) {
-        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+    /**
+     * Shows a snackbar
+     */
+    void showSnackbar(String str) {
+        Snackbar.make(findViewById(R.id.main_layout), str, Snackbar.LENGTH_SHORT).show();
     }
 
-    void toast(@StringRes int strRes) {
-        Toast.makeText(context, strRes, Toast.LENGTH_SHORT).show();
+    /**
+     * Shows a snackbar
+     */
+    void showSnackbar(@StringRes int strRes) {
+        Snackbar.make(findViewById(R.id.main_layout), strRes, Snackbar.LENGTH_SHORT).show();
     }
 
     boolean latIsEmpty() {
@@ -543,20 +550,69 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     void changeButtonToApply() {
         buttonApplyStop.setText(context.getResources().getString(R.string.ActivityMain_Apply));
-        buttonApplyStop.setOnClickListener(view -> {
-            if (binder == null) {
-                Intent intent = new Intent(this, MockedLocationService.class);
-                bindService(intent, this, BIND_AUTO_CREATE);
+        buttonApplyStop.setOnClickListener(view -> startOrBindMockService());
+    }
+
+    private void startOrBindMockService() {
+        ensureRuntimePermissions();
+        requestIgnoreBatteryOptimizations();
+        if (binder == null) {
+            Intent intent = new Intent(this, MockedLocationService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(this, intent);
             } else {
-                binder.continueMock();
+                startService(intent);
             }
-        });
+            bindService(intent, this, BIND_AUTO_CREATE);
+        } else {
+            binder.continueMock();
+        }
+    }
+
+
+    private void requestIgnoreBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (pm != null && pm.isIgnoringBatteryOptimizations(getPackageName())) return;
+        try {
+            Intent i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            i.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(i);
+        } catch (Exception e) {
+            Log.w(MainActivity.class.toString(), "Could not request ignore battery optimizations", e);
+        }
+    }
+
+    private void ensureRuntimePermissions() {
+        java.util.ArrayList<String> needed = new java.util.ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (Build.VERSION.SDK_INT >= 33
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        if (!needed.isEmpty()) {
+            ActivityCompat.requestPermissions(this, needed.toArray(new String[0]), 1001);
+        }
     }
 
     void changeButtonToStop() {
         buttonApplyStop.setText(context.getResources().getString(R.string.ActivityMain_Stop));
         buttonApplyStop.setOnClickListener(view -> {
-            unbindService(this);
+            if (binder != null) {
+                binder.stopMock();
+            } else {
+                Intent stop = new Intent(this, MockedLocationService.class);
+                stop.setAction(MockedLocationService.ACTION_STOP);
+                startService(stop);
+            }
+            try {
+                unbindService(this);
+            } catch (IllegalArgumentException ignored) {
+            }
             disconnectService();
         });
     }
@@ -581,6 +637,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         saveSettings();
     }
 
+    private static boolean containsCjk(String query) {
+        for (int i = 0; i < query.length(); ) {
+            int cp = query.codePointAt(i);
+            if (cp >= 0x4E00 && cp <= 0x9FFF) return true;
+            i += Character.charCount(cp);
+        }
+        return false;
+    }
+
     private void searchAddress(String query) {
         if (query == null || query.isBlank()) return;
         SharedPreferences prefs = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
@@ -589,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         double biasLng = lng;
         new Thread(() -> {
             try {
-                boolean hasChinese = query.codePoints().anyMatch(c -> c >= 0x4E00 && c <= 0x9FFF);
+                boolean hasChinese = containsCjk(query);
                 final double[] coords;
                 if (!key.isEmpty() && hasChinese) {
                     double[] r = geocodeTencentSuggestion(query, key, biasLat, biasLng);
@@ -600,12 +665,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 if (coords != null) {
                     runOnUiThread(() -> setLatLng(coords[0], coords[1], LOAD));
                 } else {
-                    runOnUiThread(() -> toast(R.string.MainActivity_SearchNotFound));
+                    runOnUiThread(() -> showSnackbar(R.string.MainActivity_SearchNotFound));
                 }
             } catch (Exception e) {
                 Log.e(MainActivity.class.toString(), "Geocode search failed", e);
                 String msg = e.getMessage();
-                runOnUiThread(() -> toast(msg != null ? msg : getString(R.string.MainActivity_SearchNotFound)));
+                runOnUiThread(() -> showSnackbar(msg != null ? msg : getString(R.string.MainActivity_SearchNotFound)));
             }
         }).start();
     }
@@ -617,7 +682,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         double biasLng = lng;
         new Thread(() -> {
             try {
-                boolean hasChinese = query.codePoints().anyMatch(c -> c >= 0x4E00 && c <= 0x9FFF);
+                boolean hasChinese = containsCjk(query);
                 final List<SearchResult> results;
                 if (!key.isEmpty() && hasChinese) {
                     results = fetchTencentSuggestions(query, key, biasLat, biasLng);
@@ -816,14 +881,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             case SERVICE_BOUND -> applyLocation();
             case MOCKED -> {
                 changeButtonToStop();
-                toast(R.string.MainActivity_MockApplied);
+                showSnackbar(R.string.MainActivity_MockApplied);
             }
-            case MOCK_ERROR -> toast(R.string.MainActivity_MockNotApplied);
+            case MOCK_ERROR -> showSnackbar(R.string.MainActivity_MockNotApplied);
         }
     }
 
     private void indicateMockStop() {
-        toast(R.string.MainActivity_MockStopped);
+        showSnackbar(R.string.MainActivity_MockStopped);
         changeButtonToApply();
     }
 

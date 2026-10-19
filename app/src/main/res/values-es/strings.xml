@@ -30,4 +30,19 @@
     <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
 
+    <string name="ActivityMain_SearchHint">Buscar una dirección: calle, ciudad</string>
+    <string name="MainActivity_SearchNotFound">Dirección no encontrada.</string>
+    <string name="ActivityMain_CoordinatesLabel">Ubicación actual</string>
+    <string name="ActivityMain_CoordinatesTitle">Control de coordenadas</string>
+    <string name="ActivityMain_CoordinatesSubtitle">Actualiza la posición actual del navegador</string>
+    <string name="ActivityMore_AmapKey">Clave API de Tencent Maps (opcional)</string>
+    <string name="ActivityMore_AmapKeyInfo">Clave de Tencent Maps de lbs.qq.com. Se usa para buscar direcciones y teselas. Al definirla se cambia automáticamente a teselas WMTS de Tencent Maps (la clave debe tener acceso WMTS). Reinicia tras cambiarla.</string>
+    <string name="ActivityMore_TencentSk">Clave secreta de Tencent Maps (SK, opcional)</string>
+    <string name="ActivityMore_TencentSkInfo">SK de la consola lbs.qq.com. Obligatorio si la verificación de firma está activada. Déjalo en blanco si la desactivaste.</string>
+    <string name="ActivityMore_RestartApp">Reiniciar aplicación</string>
+
+    <string name="MockService_ChannelName">Ubicación ficticia</string>
+    <string name="MockService_ChannelDesc">Mantiene la inyección de GPS ficticio mientras la app está en segundo plano</string>
+    <string name="MockService_Title">Fake Traveler está simulando la ubicación</string>
+    <string name="MockService_Text">Ubicación: %1$s</string>
 </resources>

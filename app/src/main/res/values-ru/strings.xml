@@ -31,4 +31,19 @@
     <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
 
+    <string name="ActivityMain_SearchHint">Поиск адреса: улица, город</string>
+    <string name="MainActivity_SearchNotFound">Адрес не найден.</string>
+    <string name="ActivityMain_CoordinatesLabel">Текущая позиция</string>
+    <string name="ActivityMain_CoordinatesTitle">Координаты</string>
+    <string name="ActivityMain_CoordinatesSubtitle">Обновить текущую позицию навигатора</string>
+    <string name="ActivityMore_AmapKey">Ключ API Tencent Maps (необязательно)</string>
+    <string name="ActivityMore_AmapKeyInfo">Ключ Tencent Maps с lbs.qq.com. Для поиска адресов и тайлов. Ключ автоматически переключает тайлы на Tencent Maps WMTS (нужен доступ WMTS). Перезапустите после изменения.</string>
+    <string name="ActivityMore_TencentSk">Секретный ключ Tencent Maps (SK, необязательно)</string>
+    <string name="ActivityMore_TencentSkInfo">SK из консоли lbs.qq.com. Нужен, если для ключа включена проверка подписи. Оставьте пустым, если проверка отключена.</string>
+    <string name="ActivityMore_RestartApp">Перезапустить приложение</string>
+
+    <string name="MockService_ChannelName">Фиктивное местоположение</string>
+    <string name="MockService_ChannelDesc">Продолжает подменять GPS, пока приложение в фоне</string>
+    <string name="MockService_Title">Fake Traveler подменяет местоположение</string>
+    <string name="MockService_Text">Местоположение: %1$s</string>
 </resources>

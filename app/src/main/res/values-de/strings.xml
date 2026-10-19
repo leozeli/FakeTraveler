@@ -32,4 +32,19 @@
     <string name="ActivityMore_MapProviderInfo">Benötigt Neustart - eine Liste der möglichen Werte finden Sie hier: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Sowohl <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> als auch <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> sind unter der BSD 2-Clause License lizenziert.]]></string>
 
+    <string name="ActivityMain_SearchHint">Adresse suchen: Straße, Stadt</string>
+    <string name="MainActivity_SearchNotFound">Adresse nicht gefunden.</string>
+    <string name="ActivityMain_CoordinatesLabel">Aktuelle Position</string>
+    <string name="ActivityMain_CoordinatesTitle">Koordinaten</string>
+    <string name="ActivityMain_CoordinatesSubtitle">Aktuelle Navigator-Position aktualisieren</string>
+    <string name="ActivityMore_AmapKey">Tencent Maps API-Schlüssel (optional)</string>
+    <string name="ActivityMore_AmapKeyInfo">Tencent-Maps-Schlüssel von lbs.qq.com. Für Adresssuche und Kartenkacheln. Ein Schlüssel schaltet automatisch auf Tencent-Maps-WMTS (WMTS-Zugriff am Schlüssel nötig). Nach Änderung neu starten.</string>
+    <string name="ActivityMore_TencentSk">Tencent Maps Geheimschlüssel (SK, optional)</string>
+    <string name="ActivityMore_TencentSkInfo">SK aus der lbs.qq.com-Konsole. Nötig, wenn die Signaturprüfung für den Schlüssel aktiv ist. Leer lassen, wenn die Signaturprüfung deaktiviert ist.</string>
+    <string name="ActivityMore_RestartApp">App neu starten</string>
+
+    <string name="MockService_ChannelName">Simulierter Standort</string>
+    <string name="MockService_ChannelDesc">Hält die simulierte GPS-Position aktiv, während die App im Hintergrund ist</string>
+    <string name="MockService_Title">Fake Traveler simuliert den Standort</string>
+    <string name="MockService_Text">Standort: %1$s</string>
 </resources>

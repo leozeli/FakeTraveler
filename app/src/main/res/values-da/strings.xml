@@ -32,5 +32,19 @@
     <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
 
+    <string name="ActivityMain_SearchHint">Søg efter en adresse: gade, by</string>
+    <string name="MainActivity_SearchNotFound">Adresse ikke fundet.</string>
+    <string name="ActivityMain_CoordinatesLabel">Nuværende position</string>
+    <string name="ActivityMain_CoordinatesTitle">Koordinater</string>
+    <string name="ActivityMain_CoordinatesSubtitle">Opdater navigatorens aktuelle position</string>
+    <string name="ActivityMore_AmapKey">Tencent Maps API-nøgle (valgfri)</string>
+    <string name="ActivityMore_AmapKeyInfo">Tencent Maps-nøgle fra lbs.qq.com. Bruges til adressesøgning og kortfliser. En nøgle skifter automatisk til Tencent Maps WMTS (kræver WMTS-adgang). Genstart efter ændring.</string>
+    <string name="ActivityMore_TencentSk">Tencent Maps hemmelig nøgle (SK, valgfri)</string>
+    <string name="ActivityMore_TencentSkInfo">SK fra lbs.qq.com-konsollen. Kræves hvis signaturkontrol er slået til. Lad feltet være tomt hvis signaturkontrol er slået fra.</string>
+    <string name="ActivityMore_RestartApp">Genstart app</string>
 
+    <string name="MockService_ChannelName">Simuleret placering</string>
+    <string name="MockService_ChannelDesc">Holder falsk GPS-indsprøjtning kørende, mens appen er i baggrunden</string>
+    <string name="MockService_Title">Fake Traveler simulerer placering</string>
+    <string name="MockService_Text">Placering: %1$s</string>
 </resources>
