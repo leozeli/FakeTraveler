@@ -31,4 +31,9 @@
     <string name="ActivityMore_MapProvider">Map Provider (e.g., \'OpenStreetMap\')</string>
     <string name="ActivityMore_MapProviderInfo">Requires restart - a list of possible values can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Both <a href="https://github.com/Leaflet/Leaflet/blob/main/LICENSE">Leaflet</a> and <a href="https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md">Leaflet-providers</a> are licensed under the BSD 2-Clause License.]]></string>
+
+    <string name="MockService_ChannelName">Mock location</string>
+    <string name="MockService_ChannelDesc">Keeps fake GPS injecting while the app is in the background</string>
+    <string name="MockService_Title">Fake Traveler is mocking location</string>
+    <string name="MockService_Text">Location: %1$s</string>
 </resources>
