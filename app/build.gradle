@@ -2,22 +2,34 @@ apply plugin: 'com.android.application'
 
 android {
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     defaultConfig {
         applicationId = "cl.coders.faketraveler"
         minSdk = 21
         compileSdk = 36
         targetSdk = 36
-        versionCode = 231
-        versionName = "2.3.1"
+        versionCode = 236
+        versionName = "2.3.2-maps-fgs2"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
     }
+    // Public distribution key for this fork's GitHub releases. It is not the
+    // upstream F-Droid key and not a local debug keystore, so an already
+    // installed cl.coders.faketraveler must be uninstalled before upgrading.
+    signingConfigs {
+        release {
+            storeFile file("release.keystore")
+            storePassword "faketraveler"
+            keyAlias "faketraveler"
+            keyPassword "faketraveler"
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -37,7 +49,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 

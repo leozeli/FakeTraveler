@@ -1,0 +1,1 @@
+* Standortsimulation läuft standardmäßig unbegrenzt (Anzahl 0, kein Endzeitpunkt) im Abstand von 10 Sekunden

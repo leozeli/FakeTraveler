@@ -1,0 +1,1 @@
+* Simulierte Position läuft im Hintergrund über einen Vordergrunddienst weiter
