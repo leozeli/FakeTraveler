@@ -1,0 +1,2 @@
+* Interval 0 injects continuously (about every 0.1 s) and applies to a running session immediately
+* Mock location keeps injecting after Fake Traveler is backgrounded: failed fixes no longer stop the loop, and a stalled service is restarted

@@ -10,8 +10,8 @@ android {
         minSdk = 21
         compileSdk = 36
         targetSdk = 36
-        versionCode = 236
-        versionName = "2.3.2-maps-fgs2"
+        versionCode = 237
+        versionName = "2.3.3"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'org.maplibre.gl:android-sdk:11.5.2'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 java {

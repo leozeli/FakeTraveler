@@ -20,7 +20,7 @@
     <!--  Strings from activity_more.xml layout  -->
     <string name="ActivityMore_HowToTittle">Bedienungsanleitung</string>
     <string name="ActivityMore_HowManyTimes">Wie oft möchten Sie den Standort simulieren? (0&#160;=&#160;unbegrenzt)</string>
-    <string name="ActivityMore_TimeInterval">Zeit zwischen jeder Simulation</string>
+    <string name="ActivityMore_TimeInterval">Sekunden zwischen jeder Simulation (0&#160;=&#160;dauerhaft, etwa alle 0,1&#160;s)</string>
     <string name="ActivityMore_Speed">Geschwindigkeit anhand von Bewegung simulieren</string>
     <string name="ActivityMore_Copyright">Copyright 2018\-2025 Matías Castillo Felmer and contributors</string>
     <string name="ActivityMore_SourceCode">Quellcode verfügbar unter: https://github.com/mcastillof/FakeTraveler</string>
@@ -46,5 +46,7 @@
     <string name="MockService_ChannelName">Simulierter Standort</string>
     <string name="MockService_ChannelDesc">Hält die simulierte GPS-Position aktiv, während die App im Hintergrund ist</string>
     <string name="MockService_Title">Fake Traveler simuliert den Standort</string>
-    <string name="MockService_Text">Standort: %1$s</string>
+    <string name="MockService_Text">Standort: %1$s · %2$s</string>
+    <string name="MockService_Continuous">dauerhaft</string>
+    <string name="MockService_EverySeconds">alle %1$d s</string>
 </resources>

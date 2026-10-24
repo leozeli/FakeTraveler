@@ -23,7 +23,7 @@
     <!--  Strings from activity_more.xml layout  -->
     <string name="ActivityMore_HowToTittle">如何使用？</string>
     <string name="ActivityMore_HowManyTimes">模拟位置的次数？（0 = 无限）</string>
-    <string name="ActivityMore_TimeInterval">每次模拟间隔秒数？</string>
+    <string name="ActivityMore_TimeInterval">每次模拟间隔秒数？（0 = 持续，约每 0.1 秒注入一次）</string>
     <string name="ActivityMore_Speed">以速度模拟移动</string>
     <string name="ActivityMore_Copyright">版权所有 2018–2025 Matías Castillo Felmer 及贡献者</string>
     <string name="ActivityMore_SourceCode">源代码：https://github.com/mcastillof/FakeTraveler</string>
@@ -43,5 +43,7 @@
     <string name="MockService_ChannelName">模拟位置</string>
     <string name="MockService_ChannelDesc">在应用处于后台时继续注入虚拟 GPS</string>
     <string name="MockService_Title">虚拟旅者正在模拟位置</string>
-    <string name="MockService_Text">位置：%1$s</string>
+    <string name="MockService_Text">位置：%1$s · %2$s</string>
+    <string name="MockService_Continuous">持续</string>
+    <string name="MockService_EverySeconds">每 %1$d 秒</string>
 </resources>

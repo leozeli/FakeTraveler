@@ -1,0 +1,2 @@
+* Intervall 0 simuliert den Standort dauerhaft (etwa alle 0,1 s) und gilt sofort für eine laufende Sitzung
+* Die Simulation läuft weiter, wenn Fake Traveler im Hintergrund ist

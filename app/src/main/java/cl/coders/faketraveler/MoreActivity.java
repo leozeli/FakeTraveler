@@ -6,6 +6,7 @@ import static cl.coders.faketraveler.SharedPrefsUtil.getDouble;
 import static cl.coders.faketraveler.SharedPrefsUtil.putDouble;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -172,16 +174,24 @@ public class MoreActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
 
                 if (etMockFrequency.getText().toString().isBlank()) {
+                    // Placeholder while the field is cleared. Do not push 10 into
+                    // a live loop or typing "0" briefly reverts to one-second steps.
                     editor.putInt("mockFrequency", 10);
-                } else {
-                    try {
-                        editor.putInt("mockFrequency", Integer.parseInt(etMockFrequency.getText().toString()));
-                    } catch (Throwable t) {
-                        Log.e(MoreActivity.class.toString(), "Could not parse mockFrequency!", t);
-                    }
+                    editor.apply();
+                    return;
                 }
-
+                int seconds;
+                try {
+                    seconds = Integer.parseInt(etMockFrequency.getText().toString());
+                } catch (Throwable t) {
+                    Log.e(MoreActivity.class.toString(), "Could not parse mockFrequency!", t);
+                    return;
+                }
+                editor.putInt("mockFrequency", seconds);
                 editor.apply();
+                // Apply to a live inject loop now. Otherwise 0 stays on screen
+                // and the service keeps the previous delay until a process restart.
+                pushIntervalToRunningService(seconds);
             }
 
             @Override
@@ -281,6 +291,23 @@ public class MoreActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
+    }
+
+    /**
+     * Push a new interval into an already-running mock. Starting a session is
+     * still the Apply button; this only changes the live delay.
+     */
+    private void pushIntervalToRunningService(int intervalSeconds) {
+        SharedPreferences prefs = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean("mockRunning", false)) return;
+        Intent intent = new Intent(this, MockedLocationService.class);
+        intent.setAction(MockedLocationService.ACTION_ENSURE);
+        intent.putExtra(MockedLocationService.EXTRA_MOCK_MILLI, MockInterval.toDelayMillis(intervalSeconds));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(this, intent);
+        } else {
+            startService(intent);
+        }
     }
 
 }
