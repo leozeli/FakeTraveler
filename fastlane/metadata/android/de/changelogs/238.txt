@@ -1,0 +1,1 @@
+* Die Einstellungen haben eine Speichern-Schaltfläche, die Intervall und übrige Optionen sofort schreibt

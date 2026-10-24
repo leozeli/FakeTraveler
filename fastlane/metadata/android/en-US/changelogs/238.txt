@@ -1,0 +1,1 @@
+* Settings screen has a Save button that writes the mock interval and the other options immediately

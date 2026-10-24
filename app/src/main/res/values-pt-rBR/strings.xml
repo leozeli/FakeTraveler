@@ -41,6 +41,9 @@
     <string name="ActivityMore_TencentSk">Chave secreta do Tencent Maps (SK, opcional)</string>
     <string name="ActivityMore_TencentSkInfo">SK do console lbs.qq.com. Obrigatório se a verificação de assinatura estiver ativa. Deixe em branco se ela estiver desativada.</string>
     <string name="ActivityMore_RestartApp">Reiniciar o app</string>
+    <string name="ActivityMore_Save">Salvar configurações</string>
+    <string name="ActivityMore_Saved">Configurações salvas</string>
+    <string name="ActivityMore_SaveInvalid">Informe contagem, intervalo e deslocamento válidos.</string>
 
     <string name="MockService_ChannelName">Localização fictícia</string>
     <string name="MockService_ChannelDesc">Mantém a injeção de GPS fictício enquanto o app está em segundo plano</string>
