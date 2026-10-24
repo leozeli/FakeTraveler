@@ -38,6 +38,9 @@
     <string name="ActivityMore_MapProvider">地图瓦片 URL（需重启生效）</string>
     <string name="ActivityMore_MapProviderInfo">输入含 {z}/{x}/{y} 占位符的瓦片地址。留空使用 OpenStreetMap（全球）。\n\n填入腾讯地图 Key 后，将自动切换为腾讯地图 WMTS 瓦片。修改 Key 后重启生效。\n\n注意：高德/百度地图使用 GCJ-02 坐标，与 GPS 有约 300–500 米偏差。</string>
     <string name="ActivityMore_RestartApp">重启应用</string>
+    <string name="ActivityMore_Save">保存设置</string>
+    <string name="ActivityMore_Saved">设置已保存</string>
+    <string name="ActivityMore_SaveInvalid">请先填写有效的次数、间隔和移动偏移，再保存。</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[地图由 <a href="https://maplibre.org/">MapLibre</a>（BSD 2-Clause 协议）渲染，数据来自 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 贡献者。]]></string>
 
     <string name="MockService_ChannelName">模拟位置</string>

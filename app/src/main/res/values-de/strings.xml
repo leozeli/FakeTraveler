@@ -42,6 +42,9 @@
     <string name="ActivityMore_TencentSk">Tencent Maps Geheimschlüssel (SK, optional)</string>
     <string name="ActivityMore_TencentSkInfo">SK aus der lbs.qq.com-Konsole. Nötig, wenn die Signaturprüfung für den Schlüssel aktiv ist. Leer lassen, wenn die Signaturprüfung deaktiviert ist.</string>
     <string name="ActivityMore_RestartApp">App neu starten</string>
+    <string name="ActivityMore_Save">Einstellungen speichern</string>
+    <string name="ActivityMore_Saved">Einstellungen gespeichert</string>
+    <string name="ActivityMore_SaveInvalid">Bitte gültige Anzahl, Intervall und Bewegung eingeben.</string>
 
     <string name="MockService_ChannelName">Simulierter Standort</string>
     <string name="MockService_ChannelDesc">Hält die simulierte GPS-Position aktiv, während die App im Hintergrund ist</string>

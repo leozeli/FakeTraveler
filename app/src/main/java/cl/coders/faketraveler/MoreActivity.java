@@ -16,11 +16,13 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -174,10 +176,8 @@ public class MoreActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPref.edit();
 
                 if (etMockFrequency.getText().toString().isBlank()) {
-                    // Placeholder while the field is cleared. Do not push 10 into
-                    // a live loop or typing "0" briefly reverts to one-second steps.
-                    editor.putInt("mockFrequency", 10);
-                    editor.apply();
+                    // Empty while the user is deleting the old value. Do not
+                    // write 10, or interval 0 never survives until Save.
                     return;
                 }
                 int seconds;
@@ -202,6 +202,13 @@ public class MoreActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
+        });
+        etMockFrequency.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                persistSettings(true);
+                return true;
+            }
+            return false;
         });
 
         CheckBox mockSpeed = findViewById(R.id.cb_MockSpeed);
@@ -259,8 +266,15 @@ public class MoreActivity extends AppCompatActivity {
             }
         });
 
+        MaterialButton btnSave = findViewById(R.id.btn_SaveSettings);
+        btnSave.setOnClickListener(v -> persistSettings(true));
+
         MaterialButton btnRestart = findViewById(R.id.btn_RestartApp);
         btnRestart.setOnClickListener(v -> {
+            if (!persistSettings(false)) {
+                showSnackbar(R.string.ActivityMore_SaveInvalid);
+                return;
+            }
             android.app.PendingIntent pending = android.app.PendingIntent.getActivity(
                     getApplicationContext(), 0,
                     getPackageManager().getLaunchIntentForPackage(getPackageName()),
@@ -291,6 +305,96 @@ public class MoreActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        // Leaving the screen must flush the form. Text watchers use apply(),
+        // which can still be in memory when the process is backgrounded.
+        persistSettings(false);
+        super.onPause();
+    }
+
+    /**
+     * Writes every settings field. Interval 0 is stored as 0 (continuous).
+     *
+     * @return false when a numeric field cannot be parsed
+     */
+    private boolean persistSettings(boolean notify) {
+        EditText countView = findViewById(R.id.et_MockCount);
+        EditText frequencyView = findViewById(R.id.et_MockFrequency);
+        EditText dLatView = findViewById(R.id.et_DMockLat);
+        EditText dLngView = findViewById(R.id.et_DMockLon);
+        CheckBox speedView = findViewById(R.id.cb_MockSpeed);
+        EditText keyView = findViewById(R.id.et_AmapKey);
+        EditText skView = findViewById(R.id.et_TencentSk);
+        EditText tileView = findViewById(R.id.et_MapProvider);
+        if (countView == null || frequencyView == null) return false;
+
+        int count;
+        String countText = countView.getText().toString().trim();
+        if (countText.isEmpty()) {
+            count = 0;
+        } else {
+            try {
+                count = Integer.parseInt(countText);
+            } catch (NumberFormatException e) {
+                if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+                return false;
+            }
+        }
+        if (count < 0) count = 0;
+
+        String frequencyText = frequencyView.getText().toString().trim();
+        if (frequencyText.isEmpty()) {
+            if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+            return false;
+        }
+        int seconds;
+        try {
+            seconds = Integer.parseInt(frequencyText);
+        } catch (NumberFormatException e) {
+            if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+            return false;
+        }
+        if (seconds < 0) {
+            if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+            return false;
+        }
+
+        double dLat = 0;
+        double dLng = 0;
+        String dLatText = dLatView.getText().toString().trim();
+        String dLngText = dLngView.getText().toString().trim();
+        try {
+            if (!dLatText.isEmpty()) dLat = Double.parseDouble(dLatText);
+            if (!dLngText.isEmpty()) dLng = Double.parseDouble(dLngText);
+        } catch (NumberFormatException e) {
+            if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+            return false;
+        }
+
+        String tile = tileView.getText().toString().trim();
+        SharedPreferences.Editor editor = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE).edit();
+        editor.putInt("mockCount", count);
+        editor.putInt("mockFrequency", seconds);
+        putDouble(editor, "dLat", dLat);
+        putDouble(editor, "dLng", dLng);
+        editor.putBoolean("mockSpeed", speedView.isChecked());
+        editor.putString("geocoderKey", keyView.getText().toString().trim());
+        editor.putString("geocoderSk", skView.getText().toString().trim());
+        editor.putString("tileUrl", tile.isEmpty() ? MainActivity.DEFAULT_TILE_URL : tile);
+        if (!editor.commit()) {
+            if (notify) showSnackbar(R.string.ActivityMore_SaveInvalid);
+            return false;
+        }
+        pushIntervalToRunningService(seconds);
+        if (notify) showSnackbar(R.string.ActivityMore_Saved);
+        return true;
+    }
+
+    private void showSnackbar(int message) {
+        Snackbar.make(findViewById(R.id.more_layout), message, Snackbar.LENGTH_SHORT).show();
     }
 
     /**

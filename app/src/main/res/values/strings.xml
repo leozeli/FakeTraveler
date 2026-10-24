@@ -40,6 +40,9 @@
     <string name="ActivityMore_MapProvider">Map Tile URL (requires restart)</string>
     <string name="ActivityMore_MapProviderInfo">Tile URL with {z}/{x}/{y} placeholders. Leave blank to use Gaode (AutoNavi) as default.\n\nIf a Tencent Maps API key is set above, tiles are automatically switched to Tencent Maps WMTS. Restart after changing the key.\n\nNote: Gaode/Baidu tiles use GCJ-02 coordinates (~300m offset from GPS).</string>
     <string name="ActivityMore_RestartApp">Restart App</string>
+    <string name="ActivityMore_Save">Save settings</string>
+    <string name="ActivityMore_Saved">Settings saved</string>
+    <string name="ActivityMore_SaveInvalid">Enter a valid count, interval, and movement offset before saving.</string>
     <string name="ActivityMore_LeafletLicense"><![CDATA[Map rendered by <a href="https://maplibre.org/">MapLibre</a> (BSD 2-Clause), data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.]]></string>
 
     <string name="MockService_ChannelName">Mock location</string>
