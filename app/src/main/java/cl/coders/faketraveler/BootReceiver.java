@@ -31,8 +31,7 @@ public class BootReceiver extends BroadcastReceiver {
         svc.putExtra(MockedLocationService.EXTRA_LATITUDE_DISTANCE, Double.longBitsToDouble(prefs.getLong("dLat", 0)) / 1000000.0);
         svc.putExtra(MockedLocationService.EXTRA_LONGITUDE_DISTANCE, Double.longBitsToDouble(prefs.getLong("dLng", 0)) / 1000000.0);
         int freq = prefs.getInt("mockFrequency", 10);
-        if (freq <= 0) freq = 1;
-        svc.putExtra(MockedLocationService.EXTRA_MOCK_MILLI, freq * 1000L);
+        svc.putExtra(MockedLocationService.EXTRA_MOCK_MILLI, MockInterval.toDelayMillis(freq));
         svc.putExtra(MockedLocationService.EXTRA_MAX_TIMES, 0); // infinite after reboot
         svc.putExtra(MockedLocationService.EXTRA_MOCK_SPEED, 0f);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

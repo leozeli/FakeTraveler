@@ -19,7 +19,7 @@
     <!--  Strings from activity_more.xml layout  -->
     <string name="ActivityMore_HowToTittle">Como usar?</string>
     <string name="ActivityMore_HowManyTimes">Quantas vezes deseja mudar sua localização? (0&#160;=&#160;infinito)</string>
-    <string name="ActivityMore_TimeInterval">Quantos segundos entre cada mudança?</string>
+    <string name="ActivityMore_TimeInterval">Quantos segundos entre cada mudança? (0&#160;=&#160;contínuo, a cada 0,1&#160;s)</string>
     <string name="ActivityMore_Speed">Mock movement as speed</string>
     <string name="ActivityMore_Copyright">Todos os direitos reservados 2018\-2025 Matías Castillo Felmer e contribuidores</string>
     <string name="ActivityMore_SourceCode">Código fonte disponível em https://github.com/mcastillof/FakeTraveler</string>
@@ -45,5 +45,7 @@
     <string name="MockService_ChannelName">Localização fictícia</string>
     <string name="MockService_ChannelDesc">Mantém a injeção de GPS fictício enquanto o app está em segundo plano</string>
     <string name="MockService_Title">Fake Traveler está simulando a localização</string>
-    <string name="MockService_Text">Localização: %1$s</string>
+    <string name="MockService_Text">Localização: %1$s · %2$s</string>
+    <string name="MockService_Continuous">contínuo</string>
+    <string name="MockService_EverySeconds">a cada %1$d s</string>
 </resources>

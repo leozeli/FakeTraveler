@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Nullable
     private MockedLocationService.MockedBinder binder = null;
+    /** True after bindService until onServiceConnected or a disconnect. */
+    private boolean bindRequested;
 
     // Config
     private int version;
@@ -348,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         String previousTileUrl = tileUrl;
         loadSharedPrefs();
         setupOkHttpClient();
+        ensureMockServiceRunning();
         if (!tileUrl.equals(previousTileUrl) && mapLibreMap != null) {
             mapLibreMap.setStyle(new Style.Builder().fromJson(buildStyleJson(tileUrl)), style -> {
                 markerSource = new GeoJsonSource(MARKER_SOURCE_ID,
@@ -419,8 +422,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         lng = getDouble(sharedPref, "lng", 15);
         zoom = getDouble(sharedPref, "zoom", 12);
         mockCount = sharedPref.getInt("mockCount", 0);
+        // 0 seconds is continuous mode. Do not rewrite it to 1; that made the
+        // setting look saved while the inject loop waited a full second.
         mockFrequency = sharedPref.getInt("mockFrequency", 10);
-        if (mockFrequency <= 0) mockFrequency = 1;
         dLat = getDouble(sharedPref, "dLat", 0);
         dLng = getDouble(sharedPref, "dLng", 0);
         mockSpeed = sharedPref.getBoolean("mockSpeed", true);
@@ -503,25 +507,85 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             return;
         }
 
-        lat = Double.parseDouble(editTextLat.getText().toString());
-        lng = Double.parseDouble(editTextLng.getText().toString());
+        try {
+            lat = Double.parseDouble(editTextLat.getText().toString());
+            lng = Double.parseDouble(editTextLng.getText().toString());
+        } catch (NumberFormatException e) {
+            showSnackbar(context.getResources().getString(R.string.MainActivity_NoLatLong));
+            return;
+        }
 
         if (binder != null) {
-            float[] speed = {0};
-            if (mockSpeed) {
-                Location.distanceBetween(lat, lng, lat + dLat / 1000000, lng + dLng / 1000000, speed);
-                speed[0] /= mockFrequency * 1000L;
-            }
             if (mockCount < 0) mockCount = 0;
-            binder.startMock(lng, lat, dLng / 1000000, dLat / 1000000, mockFrequency * 1000L, mockCount, speed[0]);
-            // mockCount 0 means no time limit. A positive count ends after that many injections.
-            if (mockCount == 0) {
-                endTime = 0;
-            } else {
-                endTime = System.currentTimeMillis() + (mockCount - 1L) * mockFrequency * 1000L;
-            }
-            saveSettings();
+            binder.startMock(lng, lat, dLng / 1000000, dLat / 1000000,
+                    MockInterval.toDelayMillis(mockFrequency), mockCount, currentMockSpeed());
+            rememberSessionEnd();
         }
+    }
+
+    /**
+     * Interval 0 has no end time. A positive count still ends inside the service
+     * after that many injections; the UI must not treat that session as already finished.
+     */
+    private void rememberSessionEnd() {
+        if (mockCount <= 0 || mockFrequency <= 0) {
+            endTime = 0;
+        } else {
+            endTime = System.currentTimeMillis() + (mockCount - 1L) * mockFrequency * 1000L;
+        }
+        saveSettings();
+    }
+
+    private float currentMockSpeed() {
+        if (!mockSpeed) return 0f;
+        float[] result = {0f};
+        Location.distanceBetween(lat, lng, lat + dLat / 1000000, lng + dLng / 1000000, result);
+        result[0] /= MockInterval.speedDivisorMillis(mockFrequency);
+        return result[0];
+    }
+
+    private Intent buildServiceIntent(String action) {
+        Intent intent = new Intent(this, MockedLocationService.class);
+        intent.setAction(action);
+        intent.putExtra(MockedLocationService.EXTRA_LONGITUDE, lng);
+        intent.putExtra(MockedLocationService.EXTRA_LATITUDE, lat);
+        intent.putExtra(MockedLocationService.EXTRA_LONGITUDE_DISTANCE, dLng / 1000000d);
+        intent.putExtra(MockedLocationService.EXTRA_LATITUDE_DISTANCE, dLat / 1000000d);
+        intent.putExtra(MockedLocationService.EXTRA_MOCK_MILLI, MockInterval.toDelayMillis(mockFrequency));
+        intent.putExtra(MockedLocationService.EXTRA_MAX_TIMES, Math.max(mockCount, 0));
+        intent.putExtra(MockedLocationService.EXTRA_MOCK_SPEED, currentMockSpeed());
+        return intent;
+    }
+
+    /**
+     * If prefs say mock is running, make sure the foreground service is actually
+     * injecting. Recreating the activity used to only relabel the button as Stop.
+     */
+    private void ensureMockServiceRunning() {
+        SharedPreferences prefs = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean("mockRunning", false)) return;
+        long delay = MockInterval.toDelayMillis(mockFrequency);
+        if (binder != null) {
+            binder.setIntervalMillis(delay);
+            if (binder.isInjecting()) return;
+        }
+        // Do not send the map's current lat/lng. onCreate may already have
+        // replaced it with a real last-known fix. Resume the last injected point.
+        Intent intent = new Intent(this, MockedLocationService.class);
+        intent.setAction(MockedLocationService.ACTION_ENSURE);
+        intent.putExtra(MockedLocationService.EXTRA_MOCK_MILLI, delay);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(this, intent);
+        } else {
+            startService(intent);
+        }
+        bindMockService(intent);
+    }
+
+    private void bindMockService(Intent intent) {
+        if (binder != null || bindRequested) return;
+        bindRequested = true;
+        bindService(intent, this, BIND_AUTO_CREATE);
     }
 
     /**
@@ -565,19 +629,35 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void startOrBindMockService() {
-        ensureRuntimePermissions();
-        requestIgnoreBatteryOptimizations();
-        if (binder == null) {
-            Intent intent = new Intent(this, MockedLocationService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ContextCompat.startForegroundService(this, intent);
-            } else {
-                startService(intent);
-            }
-            bindService(intent, this, BIND_AUTO_CREATE);
-        } else {
-            binder.continueMock();
+        if (latIsEmpty() || lngIsEmpty()) {
+            showSnackbar(context.getResources().getString(R.string.MainActivity_NoLatLong));
+            return;
         }
+        try {
+            lat = Double.parseDouble(editTextLat.getText().toString());
+            lng = Double.parseDouble(editTextLng.getText().toString());
+        } catch (NumberFormatException e) {
+            showSnackbar(context.getResources().getString(R.string.MainActivity_NoLatLong));
+            return;
+        }
+        if (mockCount < 0) mockCount = 0;
+        rememberSessionEnd();
+        ensureRuntimePermissions();
+        // Start the FGS with the real interval before any system dialog pauses us.
+        // Waiting for the bind callback dropped the first start when that dialog
+        // stopped the activity before LiveData delivered SERVICE_BOUND.
+        Intent intent = buildServiceIntent(MockedLocationService.ACTION_START);
+        if (binder != null) {
+            binder.startMock(lng, lat, dLng / 1000000d, dLat / 1000000d,
+                    MockInterval.toDelayMillis(mockFrequency), Math.max(mockCount, 0), currentMockSpeed());
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(this, intent);
+            bindMockService(intent);
+        } else {
+            startService(intent);
+            bindMockService(intent);
+        }
+        requestIgnoreBatteryOptimizations();
     }
 
 
@@ -620,6 +700,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 stop.setAction(MockedLocationService.ACTION_STOP);
                 startService(stop);
             }
+            bindRequested = false;
             try {
                 unbindService(this);
             } catch (IllegalArgumentException ignored) {
@@ -868,6 +949,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+        bindRequested = false;
         binder = (MockedLocationService.MockedBinder) service;
         binder.mockState.observe(this, this::onMockedStateChange);
         binder.mockedLocation.observe(this, this::onMockedLocationChange);
@@ -879,6 +961,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void disconnectService() {
+        bindRequested = false;
         if (binder == null) return;
         binder.mockState.removeObservers(this);
         binder.mockedLocation.removeObservers(this);
